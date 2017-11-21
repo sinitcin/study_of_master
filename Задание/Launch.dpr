@@ -9,7 +9,6 @@ uses
   uAbout in 'uAbout.pas' {Frame3: TFrame},
   uTrash in 'uTrash.pas' {Frame4: TFrame},
   uListAll in 'uListAll.pas' {ListAllFrame: TFrame},
-  uFind in 'uFind.pas' {Frame6: TFrame},
   uAppend in 'uAppend.pas' {Form1};
 
 {$R *.res}

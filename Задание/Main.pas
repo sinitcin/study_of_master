@@ -11,7 +11,6 @@ type
     LeftPanel: TPanel;
     Label1: TLabel;
     LabelAll: TLabel;
-    LabelGood: TLabel;
     LabelTrash: TLabel;
     Label6: TLabel;
     LabelConfig: TLabel;

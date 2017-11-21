@@ -15,6 +15,7 @@ object MainForm: TMainForm
   Padding.Right = 3
   Padding.Bottom = 3
   OldCreateOrder = False
+  Position = poScreenCenter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -65,26 +66,9 @@ object MainForm: TMainForm
       OnMouseMove = OnMenuMouseMove
       OnMouseLeave = OnMenuMouseLeave
     end
-    object LabelGood: TLabel
-      Left = 13
-      Top = 56
-      Width = 81
-      Height = 15
-      Caption = #1055#1086#1076#1093#1086#1076#1103#1097#1080#1077
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clHighlightText
-      Font.Height = -13
-      Font.Name = 'Roboto'
-      Font.Style = [fsBold]
-      ParentFont = False
-      StyleElements = [seClient, seBorder]
-      OnClick = LabelGoodClick
-      OnMouseMove = OnMenuMouseMove
-      OnMouseLeave = OnMenuMouseLeave
-    end
     object LabelTrash: TLabel
       Left = 13
-      Top = 77
+      Top = 56
       Width = 50
       Height = 15
       Caption = #1050#1086#1088#1079#1080#1085#1072
@@ -100,7 +84,7 @@ object MainForm: TMainForm
     end
     object Label6: TLabel
       Left = 8
-      Top = 120
+      Top = 96
       Width = 43
       Height = 13
       Caption = #1056#1040#1047#1053#1054#1045
@@ -116,7 +100,7 @@ object MainForm: TMainForm
     end
     object LabelConfig: TLabel
       Left = 13
-      Top = 139
+      Top = 115
       Width = 65
       Height = 15
       Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
@@ -132,7 +116,7 @@ object MainForm: TMainForm
     end
     object LabelAbout: TLabel
       Left = 13
-      Top = 160
+      Top = 136
       Width = 91
       Height = 15
       Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077'...'
