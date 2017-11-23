@@ -9,7 +9,8 @@ uses
   uAbout in 'uAbout.pas' {Frame3: TFrame},
   uTrash in 'uTrash.pas' {Frame4: TFrame},
   uListAll in 'uListAll.pas' {ListAllFrame: TFrame},
-  uAppend in 'uAppend.pas' {Form1};
+  uAppend in 'uAppend.pas' {Form1},
+  uDataBase in 'uDataBase.pas';
 
 {$R *.res}
 

@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Data.DB, Data.DbxSqlite, Data.SqlExpr, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
   Data.FMTBcd, Vcl.ExtCtrls, Vcl.DBCtrls, Datasnap.DBClient, SimpleDS,
-  Vcl.ToolWin, System.ImageList, Vcl.ImgList, DateUtils;
+  Vcl.ToolWin, System.ImageList, Vcl.ImgList, DateUtils, uDataBase;
 
 const
   COL_FAMILY = 0;
@@ -15,19 +15,6 @@ const
   COL_PATRONYMIC = 2;
   COL_QUALIF = 3;
   COL_EXPERIENCE = 4;
-
-type
-  TQualification = (qCourse { Любые курсы\ПТУ } , qTechnician { Техник } , qBachelor { Бакалавр } ,
-    qSpecialist { Специалист } , qMaster { Магистр } );
-
-  TItemData = record
-    // Стаж
-    ExperienceInterval: TDateTime;
-    // Квалификация
-    Qualification: TQualification;
-  end;
-
-  PItemData = ^TItemData;
 
 type
   TListAllFrame = class(TFrame)
@@ -41,54 +28,19 @@ type
     SQLQuery: TSQLQuery;
     ToolButton2: TToolButton;
     ImageList: TImageList;
-    CheckBox: TCheckBox;
     procedure FrameResize(Sender: TObject);
-    procedure CheckBoxClick(Sender: TObject);
   private
     { Private declarations }
     ShowOnlyExp: Boolean;
   public
     { Public declarations }
-    constructor Create(AOwner: TComponent); override;
     procedure ResizeColumns;
-    procedure ClearMainTable;
     procedure LoadMainTable;
-    function QualifToStr(AValue: TQualification): String;
   end;
 
 implementation
 
 {$R *.dfm}
-
-procedure TListAllFrame.CheckBoxClick(Sender: TObject);
-begin
-  if CheckBox.Checked = ShowOnlyExp then
-    Exit;
-  ShowOnlyExp := CheckBox.Checked;
-  ClearMainTable;
-  LoadMainTable;
-end;
-
-procedure TListAllFrame.ClearMainTable;
-begin
-  //
-end;
-
-constructor TListAllFrame.Create(AOwner: TComponent);
-var
-  DBName: String;
-begin
-  inherited;
-  DBName := ExtractFilePath(Application.ExeName) + 'main.db';
-  SQLConnection.Params.Add('Database=' + DBName);
-  try
-    SQLConnection.Connected := true;
-    SQLConnection.ExecuteDirect('PRAGMA foreign_keys=ON;');
-  except
-    on E: EDatabaseError do
-      ShowMessage('Ошибка открытия БД: ' + E.Message);
-  end;
-end;
 
 procedure TListAllFrame.FrameResize(Sender: TObject);
 begin
@@ -128,79 +80,31 @@ procedure TListAllFrame.LoadMainTable;
     Result := IntToStr(AValue) + Result;
   end;
 
-const
-  DB_FAMILY = 0;
-  DB_NAME = 1;
-  DB_PATRONYMIC = 2;
-  DB_QUALIF = 3;
-  DB_EXPERIENCE = 4;
 var
   Item: TListItem;
-  ItemData: PItemData;
   AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word;
   CurrYear, CurrMonth: Word;
   DateInterval: Double;
   Qualif: TQualification;
+  I: Integer;
+  Buffer: String;
 begin
-  SQLQuery.SQL.Text := 'SELECT';
-  SQLQuery.SQL.Add('persons.family,');
-  SQLQuery.SQL.Add('persons.name,');
-  SQLQuery.SQL.Add('persons.patronymic');
-  SQLQuery.SQL.Add(',MAX(educations.qualification)');
-  SQLQuery.SQL.Add(',SUM(works.leavedate - works.enterdate)');
-  SQLQuery.SQL.Add('FROM persons');
-  SQLQuery.SQL.Add('JOIN educations USING(id) JOIN works USING(id)');
-  SQLQuery.Open;
-  while not SQLQuery.Eof do
+  for I := 0 to DataBase.PersonCount - 1 do
   begin
-    GetMem(ItemData, SizeOf(TItemData));
     Item := ListView.Items.Add;
-    Item.Caption := SQLQuery.Fields[DB_FAMILY].AsString;
-    Item.SubItems.Add(SQLQuery.Fields[DB_NAME].AsString);
-    Item.SubItems.Add(SQLQuery.Fields[DB_PATRONYMIC].AsString);
-    if not SQLQuery.Fields[DB_QUALIF].IsNull then
-    begin
-      Qualif := TQualification(SQLQuery.Fields[DB_QUALIF].AsInteger);
-      Item.SubItems.Add(QualifToStr(Qualif));
-      ItemData.Qualification := Qualif;
-    end
+    Item.Caption := DataBase.Persons[I].Family;
+    Item.SubItems.Add(DataBase.Persons[I].Name);
+    Item.SubItems.Add(DataBase.Persons[I].Patronymic);
+    Item.SubItems.Add(QualifToStr(DataBase.PersonQuality[DataBase.Persons[I].ID]));
+    DateInterval := DataBase.PersonExperience[DataBase.Persons[I].ID];
+    DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
+    DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
+    Buffer := Trim(YearToStr(CurrYear - AYear) + ' ' + MounthToStr(CurrMonth - AMonth));
+    if Buffer <> '' then
+      Item.SubItems.Add(Buffer)
     else
-      Item.SubItems.Add('Нет квалификации');
-
-    if not SQLQuery.Fields[DB_EXPERIENCE].IsNull then
-    begin
-      DateInterval := StrToFloatDef(SQLQuery.Fields[DB_EXPERIENCE].AsString, 0.0);
-      DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
-      DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute, ASecond,
-        AMilliSecond);
-      Item.SubItems.Add(YearToStr(CurrYear - AYear) + ' ' + MounthToStr(CurrMonth - AMonth));
-      ItemData.ExperienceInterval := DateInterval;
-    end
-    else
-      Item.SubItems.Add('Нет стажа');
-    Item.Data := ItemData;
-
-    SQLQuery.Next;
-  end;
-  SQLQuery.Close;
-end;
-
-function TListAllFrame.QualifToStr(AValue: TQualification): String;
-// Квалификация в строку
-begin
-  case AValue of
-    qCourse:
-      Result := 'Прошёл курс';
-    qTechnician:
-      Result := 'Техник';
-    qBachelor:
-      Result := 'Бакалавр';
-    qSpecialist:
-      Result := 'Специалист';
-    qMaster:
-      Result := 'Магистр';
-  else
-    Result := 'Иное';
+      Item.SubItems.Add('Нет данных');
+    Item.Data := Pointer(I);
   end;
 end;
 

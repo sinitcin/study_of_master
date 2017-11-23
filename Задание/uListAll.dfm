@@ -1,8 +1,8 @@
 object ListAllFrame: TListAllFrame
   Left = 0
   Top = 0
-  Width = 639
-  Height = 436
+  Width = 543
+  Height = 335
   Align = alClient
   TabOrder = 0
   OnResize = FrameResize
@@ -12,7 +12,7 @@ object ListAllFrame: TListAllFrame
     AlignWithMargins = True
     Left = 14
     Top = 14
-    Width = 611
+    Width = 515
     Height = 18
     Margins.Left = 14
     Margins.Top = 14
@@ -29,14 +29,14 @@ object ListAllFrame: TListAllFrame
     ParentBiDiMode = False
     ParentFont = False
     StyleElements = [seClient, seBorder]
-    ExplicitLeft = 612
+    ExplicitLeft = 512
     ExplicitWidth = 113
   end
   object Bevel1: TBevel
     AlignWithMargins = True
     Left = 14
     Top = 38
-    Width = 611
+    Width = 515
     Height = 9
     Margins.Left = 14
     Margins.Top = 0
@@ -50,8 +50,8 @@ object ListAllFrame: TListAllFrame
   object Bevel2: TBevel
     AlignWithMargins = True
     Left = 14
-    Top = 361
-    Width = 611
+    Top = 260
+    Width = 515
     Height = 13
     Margins.Left = 14
     Margins.Top = 14
@@ -66,8 +66,8 @@ object ListAllFrame: TListAllFrame
     AlignWithMargins = True
     Left = 44
     Top = 61
-    Width = 581
-    Height = 249
+    Width = 485
+    Height = 182
     Margins.Left = 44
     Margins.Top = 0
     Margins.Right = 14
@@ -94,13 +94,13 @@ object ListAllFrame: TListAllFrame
     TabOrder = 0
     ViewStyle = vsReport
     ExplicitWidth = 393
-    ExplicitHeight = 141
+    ExplicitHeight = 118
   end
   object ToolBar: TToolBar
     AlignWithMargins = True
     Left = 14
-    Top = 377
-    Width = 611
+    Top = 276
+    Width = 515
     Height = 45
     Margins.Left = 14
     Margins.Right = 14
@@ -125,23 +125,6 @@ object ListAllFrame: TListAllFrame
       Caption = 'ToolButton2'
       ImageIndex = 1
     end
-  end
-  object CheckBox: TCheckBox
-    AlignWithMargins = True
-    Left = 44
-    Top = 316
-    Width = 581
-    Height = 17
-    Margins.Left = 44
-    Margins.Right = 14
-    Margins.Bottom = 14
-    Align = alBottom
-    Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1073#1077#1079' '#1089#1090#1072#1078#1072'?'
-    TabOrder = 2
-    OnClick = CheckBoxClick
-    ExplicitLeft = 128
-    ExplicitTop = 361
-    ExplicitWidth = 639
   end
   object SQLConnection: TSQLConnection
     DriverName = 'Sqlite'
@@ -174,7 +157,7 @@ object ListAllFrame: TListAllFrame
     Left = 352
     Top = 224
     Bitmap = {
-      494C010101000800180020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101010008001C0020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
