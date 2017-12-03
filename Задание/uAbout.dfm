@@ -1,7 +1,7 @@
-object Frame3: TFrame3
+object AboutFrame: TAboutFrame
   Left = 0
   Top = 0
-  Width = 320
-  Height = 240
+  Width = 477
+  Height = 345
   TabOrder = 0
 end

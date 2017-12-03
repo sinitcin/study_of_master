@@ -66,25 +66,9 @@ object MainForm: TMainForm
       OnMouseMove = OnMenuMouseMove
       OnMouseLeave = OnMenuMouseLeave
     end
-    object LabelTrash: TLabel
-      Left = 13
-      Top = 56
-      Width = 50
-      Height = 15
-      Caption = #1050#1086#1088#1079#1080#1085#1072
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clHighlightText
-      Font.Height = -13
-      Font.Name = 'Roboto'
-      Font.Style = [fsBold]
-      ParentFont = False
-      StyleElements = [seClient, seBorder]
-      OnMouseMove = OnMenuMouseMove
-      OnMouseLeave = OnMenuMouseLeave
-    end
     object Label6: TLabel
       Left = 8
-      Top = 96
+      Top = 72
       Width = 43
       Height = 13
       Caption = #1056#1040#1047#1053#1054#1045
@@ -98,25 +82,9 @@ object MainForm: TMainForm
       ParentFont = False
       StyleElements = [seClient, seBorder]
     end
-    object LabelConfig: TLabel
-      Left = 13
-      Top = 115
-      Width = 65
-      Height = 15
-      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clHighlightText
-      Font.Height = -13
-      Font.Name = 'Roboto'
-      Font.Style = [fsBold]
-      ParentFont = False
-      StyleElements = [seClient, seBorder]
-      OnMouseMove = OnMenuMouseMove
-      OnMouseLeave = OnMenuMouseLeave
-    end
     object LabelAbout: TLabel
       Left = 13
-      Top = 136
+      Top = 91
       Width = 91
       Height = 15
       Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077'...'
@@ -127,6 +95,7 @@ object MainForm: TMainForm
       Font.Style = [fsBold]
       ParentFont = False
       StyleElements = [seClient, seBorder]
+      OnClick = LabelAboutClick
       OnMouseMove = OnMenuMouseMove
       OnMouseLeave = OnMenuMouseLeave
     end

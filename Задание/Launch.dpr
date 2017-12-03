@@ -1,16 +1,16 @@
 program Launch;
 
 uses
+  Windows,
   Vcl.Forms,
   Main in 'Main.pas' {MainForm},
   Vcl.Themes,
   Vcl.Styles,
-  uConfig in 'uConfig.pas' {Frame1: TFrame},
-  uAbout in 'uAbout.pas' {Frame3: TFrame},
-  uTrash in 'uTrash.pas' {Frame4: TFrame},
+  uAbout in 'uAbout.pas' {AboutFrame: TFrame},
   uListAll in 'uListAll.pas' {ListAllFrame: TFrame},
-  uAppend in 'uAppend.pas' {Form1},
-  uDataBase in 'uDataBase.pas';
+  uAppend in 'uAppend.pas' {AppendForm},
+  uDataBase in 'uDataBase.pas',
+  uPreview in 'uPreview.pas' {FormPreview};
 
 {$R *.res}
 
@@ -18,7 +18,12 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Tablet Light');
-  Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TForm1, Form1);
+  if MessageBox(HWND_DESKTOP, 'Внести новое резюме?', 'Вопрос', MB_ICONQUESTION or MB_YESNO) = IDNO
+  then
+    Application.CreateForm(TMainForm, MainForm)
+  else
+    Application.CreateForm(TAppendForm, AppendForm);
+  Application.CreateForm(TFormPreview, FormPreview);
   Application.Run;
+
 end.

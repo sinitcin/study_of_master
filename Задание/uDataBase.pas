@@ -3,19 +3,20 @@ unit uDataBase;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Data.DB, Data.DbxSqlite, Data.SqlExpr, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
   Data.FMTBcd, Vcl.ExtCtrls, Vcl.DBCtrls, Datasnap.DBClient, SimpleDS,
-  Vcl.ToolWin, System.ImageList, Vcl.ImgList, DateUtils;
+  Vcl.ToolWin, System.ImageList, Vcl.ImgList, DateUtils, AnsiStrings;
 
 const
   INVALID_VALUE = -1;
 
 type
   TQualification = (qUnknown { Не известно } , qCourse { Любые курсы\ПТУ } ,
-    qTechnician { Техник } , qBachelor { Бакалавр } , qSpecialist { Специалист } ,
-    qMaster { Магистр } );
+    qTechnician { Техник } , qBachelor { Бакалавр } ,
+    qSpecialist { Специалист } , qMaster { Магистр } );
 
   TPerson = record
     ID: Integer;
@@ -69,14 +70,21 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    function GetPersonEduCount(PersonID: Integer): Integer;
+    function GetPersonWorksCount(PersonID: Integer): Integer;
+    function GetPersonSkillsCount(PersonID: Integer): Integer;
+    procedure NewPerson(APerson: TPerson);
+
     property PersonCount: Integer read GetPersonCount;
     property Persons[ID: Integer]: TPerson read GetPerson write SetPerson;
     property PersonQuality[ID: Integer]: TQualification read GetPersonQuality;
     property PersonExperience[ID: Integer]: Double read GetPersonExperience;
     property EducationCount: Integer read GetEducationCount;
-    property Educations[PersonID, Index: Integer]: TEducation read GetEducation write SetEducation;
+    property Educations[PersonID, Index: Integer]: TEducation read GetEducation
+      write SetEducation;
     property SkillsCount: Integer read GetSkillsCount;
-    property Skills[PersonID, Index: Integer]: TSkill read GetSkill write SetSkill;
+    property Skills[PersonID, Index: Integer]: TSkill read GetSkill
+      write SetSkill;
     property WorksCount: Integer read GetWorksCount;
     property Works[PersonID, Index: Integer]: TWork read GetWork write SetWork;
     property DataBasePath: String read fDataBasePath;
@@ -86,6 +94,7 @@ var
   DataBase: TDataBase;
 
 function QualifToStr(AValue: TQualification): String;
+function StrToQualif(AValue: String): TQualification;
 
 implementation
 
@@ -107,6 +116,28 @@ begin
       Result := 'Магистр';
   else
     Result := 'Иное';
+  end;
+end;
+
+function StrToQualif(AValue: String): TQualification;
+// Строка в квалификацию
+begin
+  case IndexText(AValue, ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр',
+    'Специалист', 'Магистр', 'Иное']) of
+    0:
+      Result := qUnknown;
+    1:
+      Result := qCourse;
+    2:
+      Result := qTechnician;
+    3:
+      Result := qBachelor;
+    4:
+      Result := qSpecialist;
+    5:
+      Result := qMaster;
+  else
+    Result := qUnknown;
   end;
 end;
 
@@ -143,7 +174,8 @@ begin
   SQLQuery := TSQLQuery.Create(nil);
   try
     SQLQuery.SQLConnection := fSQLConnection;
-    SQLQuery.SQL.Text := Format('SELECT * FROM educations WHERE ID = %d LIMIT 1 OFFSET %d;',
+    SQLQuery.SQL.Text :=
+      Format('SELECT * FROM educations WHERE ID = %d LIMIT 1 OFFSET %d;',
       [PersonID, Index]);
     SQLQuery.Open;
     while not SQLQuery.Eof do
@@ -174,7 +206,8 @@ begin
   SQLQuery := TSQLQuery.Create(nil);
   try
     SQLQuery.SQLConnection := fSQLConnection;
-    SQLQuery.SQL.Text := Format('SELECT * FROM persons LIMIT 1 OFFSET %d;', [ID]);
+    SQLQuery.SQL.Text :=
+      Format('SELECT * FROM persons LIMIT 1 OFFSET %d;', [ID]);
     SQLQuery.Open;
     while not SQLQuery.Eof do
     begin
@@ -213,6 +246,28 @@ begin
   end;
 end;
 
+function TDataBase.GetPersonEduCount(PersonID: Integer): Integer;
+var
+  SQLQuery: TSQLQuery;
+begin
+  Result := INVALID_VALUE;
+  SQLQuery := TSQLQuery.Create(nil);
+  try
+    SQLQuery.SQLConnection := fSQLConnection;
+    SQLQuery.SQL.Text :=
+      Format('SELECT COUNT(*) FROM educations WHERE ID = %d;', [PersonID]);
+    SQLQuery.Open;
+    while not SQLQuery.Eof do
+    begin
+      Result := SQLQuery.Fields[0].AsInteger;
+      SQLQuery.Next;
+    end;
+    SQLQuery.Close;
+  finally
+    SQLQuery.Free;
+  end;
+end;
+
 function TDataBase.GetPersonExperience(ID: Integer): Double;
 var
   SQLQuery: TSQLQuery;
@@ -222,7 +277,8 @@ begin
   try
     SQLQuery.SQLConnection := fSQLConnection;
     SQLQuery.SQL.Text :=
-      Format('SELECT ID, SUM(LeaveDate) - SUM(EnterDate) FROM works WHERE ID = %d;', [ID]);
+      Format('SELECT ID, SUM(LeaveDate) - SUM(EnterDate) FROM works WHERE ID = %d;',
+      [ID]);
     SQLQuery.Open;
     while not SQLQuery.Eof do
     begin
@@ -246,7 +302,8 @@ begin
   try
     SQLQuery.SQLConnection := fSQLConnection;
     SQLQuery.SQL.Text :=
-      Format('SELECT ID, MAX(Qualification) FROM educations WHERE ID = %d;', [ID]);
+      Format('SELECT ID, MAX(Qualification) FROM educations WHERE ID = %d;',
+      [ID]);
     SQLQuery.Open;
     while not SQLQuery.Eof do
     begin
@@ -260,9 +317,71 @@ begin
   end;
 end;
 
-function TDataBase.GetSkill(PersonID, Index: Integer): TSkill;
+function TDataBase.GetPersonSkillsCount(PersonID: Integer): Integer;
+var
+  SQLQuery: TSQLQuery;
 begin
+  Result := INVALID_VALUE;
+  SQLQuery := TSQLQuery.Create(nil);
+  try
+    SQLQuery.SQLConnection := fSQLConnection;
+    SQLQuery.SQL.Text := Format('SELECT COUNT(*) FROM skills WHERE ID = %d;',
+      [PersonID]);
+    SQLQuery.Open;
+    while not SQLQuery.Eof do
+    begin
+      Result := SQLQuery.Fields[0].AsInteger;
+      SQLQuery.Next;
+    end;
+    SQLQuery.Close;
+  finally
+    SQLQuery.Free;
+  end;
+end;
 
+function TDataBase.GetPersonWorksCount(PersonID: Integer): Integer;
+var
+  SQLQuery: TSQLQuery;
+begin
+  Result := INVALID_VALUE;
+  SQLQuery := TSQLQuery.Create(nil);
+  try
+    SQLQuery.SQLConnection := fSQLConnection;
+    SQLQuery.SQL.Text := Format('SELECT COUNT(*) FROM persons WHERE ID = %d;',
+      [PersonID]);
+    SQLQuery.Open;
+    while not SQLQuery.Eof do
+    begin
+      Result := SQLQuery.Fields[0].AsInteger;
+      SQLQuery.Next;
+    end;
+    SQLQuery.Close;
+  finally
+    SQLQuery.Free;
+  end;
+end;
+
+function TDataBase.GetSkill(PersonID, Index: Integer): TSkill;
+var
+  SQLQuery: TSQLQuery;
+begin
+  SQLQuery := TSQLQuery.Create(nil);
+  try
+    SQLQuery.SQLConnection := fSQLConnection;
+    SQLQuery.SQL.Text :=
+      Format('SELECT * FROM skills WHERE ID = %d LIMIT 1 OFFSET %d;',
+      [PersonID, Index]);
+    SQLQuery.Open;
+    while not SQLQuery.Eof do
+    begin
+      Result.ID := SQLQuery.Fields[0].AsInteger;
+      Result.Description := SQLQuery.Fields[1].AsString;
+      SQLQuery.Next;
+    end;
+    SQLQuery.Close;
+  finally
+    SQLQuery.Free;
+  end;
 end;
 
 function TDataBase.GetSkillsCount: Integer;
@@ -271,8 +390,33 @@ begin
 end;
 
 function TDataBase.GetWork(PersonID, Index: Integer): TWork;
+var
+  SQLQuery: TSQLQuery;
+  BufDate: Double;
 begin
-
+  SQLQuery := TSQLQuery.Create(nil);
+  try
+    SQLQuery.SQLConnection := fSQLConnection;
+    SQLQuery.SQL.Text :=
+      Format('SELECT * FROM works WHERE ID = %d LIMIT 1 OFFSET %d;',
+      [PersonID, Index]);
+    SQLQuery.Open;
+    while not SQLQuery.Eof do
+    begin
+      Result.ID := SQLQuery.Fields[0].AsInteger;
+      Result.Name := SQLQuery.Fields[1].AsString;
+      Result.Position := SQLQuery.Fields[2].AsString;
+      Result.Achievements := SQLQuery.Fields[3].AsString;
+      BufDate := StrToFloatDef(SQLQuery.Fields[4].AsString, 0.0);
+      Result.EnterDate := TDateTime(BufDate);
+      BufDate := StrToFloatDef(SQLQuery.Fields[5].AsString, 0.0);
+      Result.LeaveDate := TDateTime(BufDate);
+      SQLQuery.Next;
+    end;
+    SQLQuery.Close;
+  finally
+    SQLQuery.Free;
+  end;
 end;
 
 function TDataBase.GetWorksCount: Integer;
@@ -280,7 +424,17 @@ begin
 
 end;
 
-procedure TDataBase.SetEducation(PersonID, Index: Integer; const Value: TEducation);
+procedure TDataBase.NewPerson(APerson: TPerson);
+begin
+  fSQLConnection.ExecuteDirect
+    (Format('INSERT INTO persons (ID, Family, Name, Patronymic, Phone, Email) '
+    + 'VALUES (%d, "%s", "%s", "%s", "%s", "%s")', [PersonCount + 1,
+    APerson.Family, APerson.Name, APerson.Patronymic, APerson.Phone,
+    APerson.EMail]));
+end;
+
+procedure TDataBase.SetEducation(PersonID, Index: Integer;
+  const Value: TEducation);
 begin
 
 end;
