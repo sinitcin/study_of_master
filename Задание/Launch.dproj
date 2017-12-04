@@ -100,33 +100,22 @@
         </DelphiCompile>
         <DCCReference Include="Main.pas">
             <Form>MainForm</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="uConfig.pas">
-            <Form>Frame1</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="uAbout.pas">
-            <Form>Frame3</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="uTrash.pas">
-            <Form>Frame4</Form>
-            <FormType>dfm</FormType>
+            <Form>AboutFrame</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="uListAll.pas">
             <Form>ListAllFrame</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="uAppend.pas">
-            <Form>Form1</Form>
-            <FormType>dfm</FormType>
+            <Form>AppendForm</Form>
         </DCCReference>
         <DCCReference Include="uDataBase.pas"/>
+        <DCCReference Include="uPreview.pas">
+            <Form>FormPreview</Form>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

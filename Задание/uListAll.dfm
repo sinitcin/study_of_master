@@ -1,18 +1,16 @@
 object ListAllFrame: TListAllFrame
   Left = 0
   Top = 0
-  Width = 543
-  Height = 335
+  Width = 451
+  Height = 305
   Align = alClient
   TabOrder = 0
   OnResize = FrameResize
-  ExplicitWidth = 451
-  ExplicitHeight = 305
   object Label1: TLabel
     AlignWithMargins = True
     Left = 14
     Top = 14
-    Width = 515
+    Width = 423
     Height = 18
     Margins.Left = 14
     Margins.Top = 14
@@ -29,14 +27,14 @@ object ListAllFrame: TListAllFrame
     ParentBiDiMode = False
     ParentFont = False
     StyleElements = [seClient, seBorder]
-    ExplicitLeft = 512
+    ExplicitLeft = 324
     ExplicitWidth = 113
   end
   object Bevel1: TBevel
     AlignWithMargins = True
     Left = 14
     Top = 38
-    Width = 515
+    Width = 423
     Height = 9
     Margins.Left = 14
     Margins.Top = 0
@@ -50,8 +48,8 @@ object ListAllFrame: TListAllFrame
   object Bevel2: TBevel
     AlignWithMargins = True
     Left = 14
-    Top = 260
-    Width = 515
+    Top = 223
+    Width = 423
     Height = 13
     Margins.Left = 14
     Margins.Top = 14
@@ -62,12 +60,25 @@ object ListAllFrame: TListAllFrame
     ExplicitTop = 287
     ExplicitWidth = 549
   end
+  object Label2: TLabel
+    AlignWithMargins = True
+    Left = 14
+    Top = 250
+    Width = 423
+    Height = 13
+    Margins.Left = 14
+    Margins.Top = 14
+    Margins.Right = 14
+    Align = alBottom
+    Caption = #1060#1080#1083#1100#1090#1088#1072#1094#1080#1103' '#1089' '#1087#1086#1084#1086#1097#1100#1102' '#1079#1085#1072#1082#1086#1074' <,=,>, &&:'
+    ExplicitWidth = 212
+  end
   object ListView: TListView
     AlignWithMargins = True
     Left = 44
     Top = 61
-    Width = 485
-    Height = 182
+    Width = 393
+    Height = 145
     Margins.Left = 44
     Margins.Top = 0
     Margins.Right = 14
@@ -91,40 +102,27 @@ object ListAllFrame: TListAllFrame
     GridLines = True
     ReadOnly = True
     RowSelect = True
+    PopupMenu = PopupMenu
     TabOrder = 0
     ViewStyle = vsReport
-    ExplicitWidth = 393
-    ExplicitHeight = 118
+    OnDblClick = ListViewDblClick
   end
-  object ToolBar: TToolBar
+  object ComboBox: TComboBox
     AlignWithMargins = True
     Left = 14
-    Top = 276
-    Width = 515
-    Height = 45
+    Top = 270
+    Width = 423
+    Height = 21
     Margins.Left = 14
+    Margins.Top = 4
     Margins.Right = 14
     Margins.Bottom = 14
     Align = alBottom
-    ButtonHeight = 38
-    ButtonWidth = 65
-    Caption = 'ToolBar'
-    Images = ImageList
+    Style = csSimple
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitTop = 246
-    ExplicitWidth = 423
-    object ToolButton1: TToolButton
-      Left = 0
-      Top = 0
-      Caption = 'ToolButton1'
-      ImageIndex = 0
-    end
-    object ToolButton2: TToolButton
-      Left = 65
-      Top = 0
-      Caption = 'ToolButton2'
-      ImageIndex = 1
-    end
+    OnChange = ComboBoxChange
   end
   object SQLConnection: TSQLConnection
     DriverName = 'Sqlite'
@@ -157,7 +155,7 @@ object ListAllFrame: TListAllFrame
     Left = 352
     Top = 224
     Bitmap = {
-      494C0101010008001C0020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010101000800280020002000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000002000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -691,5 +689,18 @@ object ListAllFrame: TListAllFrame
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000}
+  end
+  object PopupMenu: TPopupMenu
+    Left = 208
+    Top = 136
+    object N1: TMenuItem
+      Caption = #1042#1099#1076#1077#1083#1080#1090#1100
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object R1: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+    end
   end
 end

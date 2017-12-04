@@ -4,16 +4,14 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, uListAll;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, uListAll, uAbout;
 
 type
   TMainForm = class(TForm)
     LeftPanel: TPanel;
     Label1: TLabel;
     LabelAll: TLabel;
-    LabelTrash: TLabel;
     Label6: TLabel;
-    LabelConfig: TLabel;
     LabelAbout: TLabel;
     ScrollBox: TScrollBox;
     procedure OnMenuMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -21,17 +19,20 @@ type
     procedure LabelAllClick(Sender: TObject);
     procedure LabelGoodClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure LabelAboutClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     procedure HideFrames;
     procedure OpenListAll;
+    procedure OpenAbout;
   end;
 
 var
   MainForm: TMainForm;
   ListAllFrame: TListAllFrame;
+  AboutFrame: TAboutFrame;
 
 implementation
 
@@ -45,9 +46,17 @@ end;
 procedure TMainForm.HideFrames;
 // Скрыть все фрэймы
 begin
+  if Assigned(AboutFrame) then
+    FreeAndNil(AboutFrame);
   if Assigned(ListAllFrame) then
     FreeAndNil(ListAllFrame);
   LabelAll.Font.Color := clHighlightText;
+  LabelAbout.Font.Color := clHighlightText;
+end;
+
+procedure TMainForm.LabelAboutClick(Sender: TObject);
+begin
+  OpenAbout();
 end;
 
 procedure TMainForm.LabelAllClick(Sender: TObject);
@@ -72,6 +81,16 @@ procedure TMainForm.OnMenuMouseMove(Sender: TObject; Shift: TShiftState; X, Y: I
 begin
   if Sender is TLabel then
     TLabel(Sender).Font.Style := [fsBold, fsUnderline];
+end;
+
+procedure TMainForm.OpenAbout;
+// Открыть фрэйм "О программе"
+begin
+  HideFrames();
+  LabelAbout.Font.Color := clHighlight;
+  AboutFrame := TAboutFrame.Create(nil);
+  AboutFrame.Parent := ScrollBox;
+  AboutFrame.Show;
 end;
 
 procedure TMainForm.OpenListAll;

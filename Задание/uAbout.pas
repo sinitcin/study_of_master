@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs;
 
 type
-  TFrame3 = class(TFrame)
+  TAboutFrame = class(TFrame)
   private
     { Private declarations }
   public
