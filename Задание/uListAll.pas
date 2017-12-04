@@ -37,7 +37,6 @@ type
     procedure ComboBoxChange(Sender: TObject);
   private
     { Private declarations }
-    ShowOnlyExp: Boolean;
   public
     { Public declarations }
     procedure ResizeColumns;
@@ -55,10 +54,8 @@ procedure TListAllFrame.ReFilterByExp(YearOfExperience: Integer; Symbol: Char);
 var
   I: Integer;
   DateInterval: Double;
-  Item: TListItem;
   AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word;
   CurrYear, CurrMonth: Word;
-  Qualif: TQualification;
 begin
   for I := ListView.Items.Count - 1 downto 0 do
   begin
@@ -122,7 +119,7 @@ var
       Exit(False);
     Result := true;
     Token := TokenList.Dequeue();
-    case IndexText(Token, KEYWORDS) of
+    case IndexText(AnsiString(Token), KEYWORDS) of
       0: // <
         Symbol := '<';
       1: // =
@@ -130,7 +127,10 @@ var
       2: // >
         Symbol := '>';
     else
-      Result := False;
+      begin
+        Symbol := #0;
+        Result := False;
+      end;
     end;
 
     if Result then
@@ -138,8 +138,8 @@ var
       if TokenList.Count = 0 then
         Exit(False);
       Token := TokenList.Dequeue();
-      if IndexText(Token, ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр', 'Специалист',
-        'Магистр', 'Иное']) = INVALID_VALUE then
+      if IndexText(AnsiString(Token), ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр',
+        'Специалист', 'Магистр', 'Иное']) = INVALID_VALUE then
         Exit(False);
 
       ReFilterByQualif(StrToQualif(Token), Symbol);
@@ -156,7 +156,7 @@ var
       Exit(False);
     Result := true;
     Token := TokenList.Dequeue();
-    case IndexText(Token, KEYWORDS) of
+    case IndexText(AnsiString(Token), KEYWORDS) of
       0: // <
         Symbol := '<';
       1: // =
@@ -164,6 +164,7 @@ var
       2: // >
         Symbol := '>';
     else
+      Symbol := #0;
       Result := False;
     end;
 
@@ -201,7 +202,7 @@ begin
     while I < TokenList.Count do
     begin
       Token := TokenList.Dequeue();
-      case IndexText(Token, ['квалификация', 'стаж', '&']) of
+      case IndexText(AnsiString(Token), ['квалификация', 'стаж', '&']) of
         0: // Квалификация
           DoQualification();
         1: // Стаж
@@ -360,7 +361,6 @@ var
   AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond: Word;
   CurrYear, CurrMonth: Word;
   DateInterval: Double;
-  Qualif: TQualification;
   I: Integer;
   Buffer: String;
 begin

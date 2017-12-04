@@ -29,25 +29,31 @@ type
 
   TEducation = record
     ID: Integer;
-    Name: String;
+    Name: String[255];
     Qualification: TQualification;
     EnterDate: TDateTime;
     LeaveDate: TDateTime;
   end;
+
+  PEducation = ^TEducation;
 
   TSkill = record
     ID: Integer;
     Description: String;
   end;
 
+  PSkill = ^TSkill;
+
   TWork = record
     ID: Integer;
-    Name: String;
-    Position: String;
-    Achievements: String;
+    Name: String[255];
+    Position: String[255];
+    Achievements: String[255];
     EnterDate: TDateTime;
     LeaveDate: TDateTime;
   end;
+
+  PWork = ^TWork;
 
   TDataBase = class
   private
@@ -119,8 +125,8 @@ end;
 function StrToQualif(AValue: String): TQualification;
 // Строка в квалификацию
 begin
-  case IndexText(AValue, ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр', 'Специалист',
-    'Магистр', 'Иное']) of
+  case IndexText(AnsiString(AValue), ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр',
+    'Специалист', 'Магистр', 'Иное']) of
     0:
       Result := qUnknown;
     1:
@@ -177,7 +183,7 @@ begin
     while not SQLQuery.Eof do
     begin
       Result.ID := SQLQuery.Fields[0].AsInteger;
-      Result.Name := SQLQuery.Fields[1].AsString;
+      Result.Name := ShortString(SQLQuery.Fields[1].AsString);
       Result.Qualification := TQualification(SQLQuery.Fields[2].AsInteger);
       Result.EnterDate := TDateTime(SQLQuery.Fields[3].AsFloat);
       Result.LeaveDate := TDateTime(SQLQuery.Fields[4].AsFloat);
@@ -191,7 +197,7 @@ end;
 
 function TDataBase.GetEducationCount: Integer;
 begin
-
+  Result := INVALID_VALUE;
 end;
 
 function TDataBase.GetPerson(ID: Integer): TPerson;
@@ -377,7 +383,7 @@ end;
 
 function TDataBase.GetSkillsCount: Integer;
 begin
-
+  Result := INVALID_VALUE;
 end;
 
 function TDataBase.GetWork(PersonID, Index: Integer): TWork;
@@ -394,9 +400,9 @@ begin
     while not SQLQuery.Eof do
     begin
       Result.ID := SQLQuery.Fields[0].AsInteger;
-      Result.Name := SQLQuery.Fields[1].AsString;
-      Result.Position := SQLQuery.Fields[2].AsString;
-      Result.Achievements := SQLQuery.Fields[3].AsString;
+      Result.Name := ShortString(SQLQuery.Fields[1].AsString);
+      Result.Position := ShortString(SQLQuery.Fields[2].AsString);
+      Result.Achievements := ShortString(SQLQuery.Fields[3].AsString);
       BufDate := StrToFloatDef(SQLQuery.Fields[4].AsString, 0.0);
       Result.EnterDate := TDateTime(BufDate);
       BufDate := StrToFloatDef(SQLQuery.Fields[5].AsString, 0.0);
@@ -411,7 +417,7 @@ end;
 
 function TDataBase.GetWorksCount: Integer;
 begin
-
+  Result := INVALID_VALUE;
 end;
 
 procedure TDataBase.NewPerson(APerson: TPerson);
