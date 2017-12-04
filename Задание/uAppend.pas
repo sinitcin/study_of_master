@@ -36,6 +36,7 @@ type
     Label1: TLabel;
     BtnSave: TButton;
     procedure BtnSaveClick(Sender: TObject);
+    procedure BtnAddExpClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -48,6 +49,28 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TAppendForm.BtnAddExpClick(Sender: TObject);
+var
+  Item: TListItem;
+  Work: TWork;
+  Person: TPerson;
+  EnterDate, LeaveDate: String;
+begin
+  Work.Name := InputBox('Запись о работе:', 'Место работы:', '');
+  Work.Position := InputBox('Запись о работе:', 'Должность:', '');
+  Work.Achievements := InputBox('Запись о работе:', 'Достижения:', '');
+  EnterDate := InputBox('Запись о работе:', 'Дата трудоустройства:', '');
+  LeaveDate := InputBox('Запись о работе:', 'Дата увольнения:', '');
+  // Work.EnterDate
+  // Work.LeaveDate
+  Item := ListViewExp.Items.Add();
+  Item.Caption := Work.Name;
+  Item.SubItems.Add(Work.Position);
+  Item.SubItems.Add(Work.Achievements);
+  Item.SubItems.Add(EnterDate);
+  Item.SubItems.Add(LeaveDate);
+end;
 
 procedure TAppendForm.BtnSaveClick(Sender: TObject);
 var
@@ -63,6 +86,7 @@ begin
   ShowMessage('Сохранено');
 
   // Стаж работы
+
   Close;
 end;
 
