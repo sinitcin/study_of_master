@@ -3,7 +3,8 @@ unit uDataBase;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Data.DB, Data.DbxSqlite, Data.SqlExpr, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
   Data.FMTBcd, Vcl.ExtCtrls, Vcl.DBCtrls, Datasnap.DBClient, SimpleDS,
@@ -72,6 +73,7 @@ type
     function GetPersonEduCount(PersonID: Integer): Integer;
     function GetPersonWorksCount(PersonID: Integer): Integer;
     function GetPersonSkillsCount(PersonID: Integer): Integer;
+    procedure NewPerson(APerson: TPerson);
     property PersonCount: Integer read GetPersonCount;
     property Persons[ID: Integer]: TPerson read GetPerson write SetPerson;
     property PersonQuality[ID: Integer]: TQualification read GetPersonQuality;
@@ -329,6 +331,7 @@ begin
 end;
 
 function TDataBase.GetPersonWorksCount(PersonID: Integer): Integer;
+
 var
   SQLQuery: TSQLQuery;
 begin
@@ -350,6 +353,7 @@ begin
 end;
 
 function TDataBase.GetSkill(PersonID, Index: Integer): TSkill;
+
 var
   SQLQuery: TSQLQuery;
 begin
@@ -408,6 +412,14 @@ end;
 function TDataBase.GetWorksCount: Integer;
 begin
 
+end;
+
+procedure TDataBase.NewPerson(APerson: TPerson);
+begin
+  fSQLConnection.ExecuteDirect
+    (Format('INSERT INTO persons (ID, Family, Name, Patronymic, Phone, Email) ' +
+    'VALUES (%d, "%s", "%s", "%s", "%s", "%s")', [PersonCount + 1, APerson.Family, APerson.Name,
+    APerson.Patronymic, APerson.Phone, APerson.EMail]));
 end;
 
 procedure TDataBase.SetEducation(PersonID, Index: Integer; const Value: TEducation);
