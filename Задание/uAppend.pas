@@ -4,9 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.ComCtrls, math, AnsiStrings,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, math, AnsiStrings,
   uDataBase;
 
 type
@@ -32,12 +31,14 @@ type
     BtnAddSkills: TButton;
     Label1: TLabel;
     BtnSave: TButton;
+    Bevel2: TBevel;
     procedure BtnSaveClick(Sender: TObject);
     procedure BtnAddExpClick(Sender: TObject);
     procedure BtnRmExpClick(Sender: TObject);
     procedure BtnAddEduClick(Sender: TObject);
     procedure BtnRmEduClick(Sender: TObject);
     procedure BtnAddSkillsClick(Sender: TObject);
+    procedure BtnRmSkillsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -55,7 +56,8 @@ function TestInput(AValue: String): Boolean;
 begin
   Result := AValue <> '';
   if not Result then
-    MessageBox(GetActiveWindow(), 'Вы не ввели данные, создание записи прервано...', 'Внимание',
+    MessageBox(GetActiveWindow(),
+      'Вы не ввели данные, создание записи прервано...', 'Внимание',
       MB_ICONWARNING);
 end;
 
@@ -66,84 +68,82 @@ var
   Edu: PEducation;
   EnterDate, LeaveDate, Qualification: String;
 begin
-  BtnAddEdu.Enabled := False;
-  try
-    FormatSettings.ShortDateFormat := 'dd.mm.yy';
-    FormatSettings.DateSeparator := '.';
-    Edu := GetMemory(SizeOf(TEducation));
-    Item := ListViewEdu.Items.Add();
+  FormatSettings.ShortDateFormat := 'dd.mm.yy';
+  FormatSettings.DateSeparator := '.';
+  Edu := GetMemory(SizeOf(TEducation));
+  Item := ListViewEdu.Items.Add();
 
-    Edu.Name := ShortString(InputBox('Запись об обучении:', 'Место обучения:', ''));
+  Edu.Name := ShortString(InputBox('Запись об обучении:',
+    'Место обучения:', ''));
+  if not TestInput(String(Edu.Name)) then
+  begin
+    FreeMemory(Edu);
+    Item.Free;
+    Exit;
+  end;
+  Item.Caption := String(Edu.Name);
+
+  repeat
+    Qualification := InputBox('Запись об обучении:',
+      'Полученная квалификация:', '');
     if not TestInput(String(Edu.Name)) then
     begin
       FreeMemory(Edu);
       Item.Free;
       Exit;
     end;
-    Item.Caption := String(Edu.Name);
+    if IndexText(AnsiString(Qualification), ['Нет', 'Прошёл курс', 'Техник',
+      'Бакалавр', 'Специалист', 'Магистр']) <> INVALID_VALUE then
+      break
+    else
+      MessageBox(GetActiveWindow(),
+        PChar(String
+        ('Введите квалификацию, например, Нет/Прошёл курс/Техник/Бакалавр/Специалист/Магистр')
+        + DateToStr(Now)), 'Внимание', MB_ICONWARNING);
+  until False;
+  Edu.Qualification := StrToQualif(Qualification);
+  Item.SubItems.Add(QualifToStr(Edu.Qualification));
 
-    repeat
-      Qualification := InputBox('Запись об обучении:', 'Полученная квалификация:', '');
-      if not TestInput(String(Edu.Name)) then
-      begin
-        FreeMemory(Edu);
-        Item.Free;
-        Exit;
-      end;
-      if IndexText(AnsiString(Qualification), ['Нет', 'Прошёл курс', 'Техник', 'Бакалавр', 'Специалист',
-        'Магистр']) <> INVALID_VALUE then
-        break
-      else
-        MessageBox(GetActiveWindow(),
-          PChar(String
-          ('Введите квалификацию, например, Нет/Прошёл курс/Техник/Бакалавр/Специалист/Магистр') +
-          DateToStr(Now)), 'Внимание', MB_ICONWARNING);
-    until False;
-    Edu.Qualification := StrToQualif(Qualification);
-    Item.SubItems.Add(QualifToStr(Edu.Qualification));
+  repeat
+    EnterDate := InputBox('Запись об обучении:', 'Дата поступления:', '');
+    if not TestInput(EnterDate) then
+    begin
+      FreeMemory(Edu);
+      Item.Free;
+      Exit;
+    end;
+    try
+      Edu.EnterDate := StrToDate(EnterDate);
+    except
+      Edu.EnterDate := 0.0;
+      MessageBox(GetActiveWindow(),
+        PChar(String('Введите дату в Вашем региональном формате, например, ') +
+        DateToStr(Now)), 'Внимание', MB_ICONWARNING);
+    end;
+  until not IsZero(Edu.EnterDate, 0.0001);
+  Item.SubItems.Add(EnterDate);
 
-    repeat
-      EnterDate := InputBox('Запись об обучении:', 'Дата поступления:', '');
-      if not TestInput(EnterDate) then
-      begin
-        FreeMemory(Edu);
-        Item.Free;
-        Exit;
-      end;
-      try
-        Edu.EnterDate := StrToDate(EnterDate);
-      except
-        Edu.EnterDate := 0.0;
-        MessageBox(GetActiveWindow(),
-          PChar(String('Введите дату в Вашем региональном формате, например, ') + DateToStr(Now)),
-          'Внимание', MB_ICONWARNING);
-      end;
-    until not IsZero(Edu.EnterDate, 0.0001);
-    Item.SubItems.Add(EnterDate);
+  repeat
+    LeaveDate := InputBox('Запись об обучении:',
+      'Дата окончания обучения:', '');
+    if not TestInput(LeaveDate) then
+    begin
+      FreeMemory(Edu);
+      Item.Free;
+      Exit;
+    end;
+    try
+      Edu.LeaveDate := StrToDate(LeaveDate);
+    except
+      Edu.LeaveDate := 0.0;
+      MessageBox(GetActiveWindow(),
+        PChar(String('Введите дату в Вашем региональном формате, например, ') +
+        DateToStr(Now)), 'Внимание', MB_ICONWARNING);
+    end;
+  until not IsZero(Edu.LeaveDate, 0.0001);
+  Item.SubItems.Add(LeaveDate);
 
-    repeat
-      LeaveDate := InputBox('Запись об обучении:', 'Дата окончания обучения:', '');
-      if not TestInput(LeaveDate) then
-      begin
-        FreeMemory(Edu);
-        Item.Free;
-        Exit;
-      end;
-      try
-        Edu.LeaveDate := StrToDate(LeaveDate);
-      except
-        Edu.LeaveDate := 0.0;
-        MessageBox(GetActiveWindow(),
-          PChar(String('Введите дату в Вашем региональном формате, например, ') + DateToStr(Now)),
-          'Внимание', MB_ICONWARNING);
-      end;
-    until not IsZero(Edu.LeaveDate, 0.0001);
-    Item.SubItems.Add(LeaveDate);
-
-    Item.Data := Edu;
-  finally
-    BtnAddEdu.Enabled := True;
-  end;
+  Item.Data := Edu;
 end;
 
 procedure TAppendForm.BtnAddExpClick(Sender: TObject);
@@ -153,82 +153,78 @@ var
   Work: PWork;
   EnterDate, LeaveDate: String;
 begin
-  BtnAddExp.Enabled := False;
-  try
-    FormatSettings.ShortDateFormat := 'dd.mm.yy';
-    FormatSettings.DateSeparator := '.';
-    Work := GetMemory(SizeOf(TWork));
-    Item := ListViewExp.Items.Add();
+  FormatSettings.ShortDateFormat := 'dd.mm.yy';
+  FormatSettings.DateSeparator := '.';
+  Work := GetMemory(SizeOf(TWork));
+  Item := ListViewExp.Items.Add();
 
-    Work.Name := ShortString(InputBox('Запись о работе:', 'Место работы:', ''));
-    if not TestInput(String(Work.Name)) then
-    begin
-      FreeMemory(Work);
-      Item.Free;
-      Exit;
-    end;
-    Item.Caption := String(Work.Name);
-
-    Work.Position := ShortString(InputBox('Запись о работе:', 'Должность:', ''));
-    if not TestInput(String(Work.Position)) then
-    begin
-      FreeMemory(Work);
-      Item.Free;
-      Exit;
-    end;
-    Item.SubItems.Add(String(Work.Position));
-
-    Work.Achievements := ShortString(InputBox('Запись о работе:', 'Достижения:', ''));
-    if not TestInput(String(Work.Achievements)) then
-    begin
-      FreeMemory(Work);
-      Item.Free;
-      Exit;
-    end;
-    Item.SubItems.Add(String(Work.Achievements));
-
-    repeat
-      EnterDate := InputBox('Запись о работе:', 'Дата трудоустройства:', '');
-      if not TestInput(EnterDate) then
-      begin
-        FreeMemory(Work);
-        Item.Free;
-        Exit;
-      end;
-      try
-        Work.EnterDate := StrToDate(EnterDate);
-      except
-        Work.EnterDate := 0.0;
-        MessageBox(GetActiveWindow(),
-          PChar(String('Введите дату в Вашем региональном формате, например, ') + DateToStr(Now)),
-          'Внимание', MB_ICONWARNING);
-      end;
-    until not IsZero(Work.EnterDate, 0.0001);
-    Item.SubItems.Add(EnterDate);
-
-    repeat
-      LeaveDate := InputBox('Запись о работе:', 'Дата увольнения:', '');
-      if not TestInput(LeaveDate) then
-      begin
-        FreeMemory(Work);
-        Item.Free;
-        Exit;
-      end;
-      try
-        Work.LeaveDate := StrToDate(LeaveDate);
-      except
-        Work.LeaveDate := 0.0;
-        MessageBox(GetActiveWindow(),
-          PChar(String('Введите дату в Вашем региональном формате, например, ') + DateToStr(Now)),
-          'Внимание', MB_ICONWARNING);
-      end;
-    until not IsZero(Work.LeaveDate, 0.0001);
-    Item.SubItems.Add(LeaveDate);
-
-    Item.Data := Work;
-  finally
-    BtnAddExp.Enabled := True;
+  Work.Name := ShortString(InputBox('Запись о работе:', 'Место работы:', ''));
+  if not TestInput(String(Work.Name)) then
+  begin
+    FreeMemory(Work);
+    Item.Free;
+    Exit;
   end;
+  Item.Caption := String(Work.Name);
+
+  Work.Position := ShortString(InputBox('Запись о работе:', 'Должность:', ''));
+  if not TestInput(String(Work.Position)) then
+  begin
+    FreeMemory(Work);
+    Item.Free;
+    Exit;
+  end;
+  Item.SubItems.Add(String(Work.Position));
+
+  Work.Achievements := ShortString(InputBox('Запись о работе:',
+    'Достижения:', ''));
+  if not TestInput(String(Work.Achievements)) then
+  begin
+    FreeMemory(Work);
+    Item.Free;
+    Exit;
+  end;
+  Item.SubItems.Add(String(Work.Achievements));
+
+  repeat
+    EnterDate := InputBox('Запись о работе:', 'Дата трудоустройства:', '');
+    if not TestInput(EnterDate) then
+    begin
+      FreeMemory(Work);
+      Item.Free;
+      Exit;
+    end;
+    try
+      Work.EnterDate := StrToDate(EnterDate);
+    except
+      Work.EnterDate := 0.0;
+      MessageBox(GetActiveWindow(),
+        PChar(String('Введите дату в Вашем региональном формате, например, ') +
+        DateToStr(Now)), 'Внимание', MB_ICONWARNING);
+    end;
+  until not IsZero(Work.EnterDate, 0.0001);
+  Item.SubItems.Add(EnterDate);
+
+  repeat
+    LeaveDate := InputBox('Запись о работе:', 'Дата увольнения:', '');
+    if not TestInput(LeaveDate) then
+    begin
+      FreeMemory(Work);
+      Item.Free;
+      Exit;
+    end;
+    try
+      Work.LeaveDate := StrToDate(LeaveDate);
+    except
+      Work.LeaveDate := 0.0;
+      MessageBox(GetActiveWindow(),
+        PChar(String('Введите дату в Вашем региональном формате, например, ') +
+        DateToStr(Now)), 'Внимание', MB_ICONWARNING);
+    end;
+  until not IsZero(Work.LeaveDate, 0.0001);
+  Item.SubItems.Add(LeaveDate);
+
+  Item.Data := Work;
 end;
 
 procedure TAppendForm.BtnAddSkillsClick(Sender: TObject);
@@ -237,32 +233,28 @@ var
   Item: TListItem;
   Skill: PSkill;
 begin
-  BtnAddEdu.Enabled := False;
-  try
-    FormatSettings.ShortDateFormat := 'dd.mm.yy';
-    FormatSettings.DateSeparator := '.';
-    Skill := GetMemory(SizeOf(TSkill));
-    Item := ListViewSkills.Items.Add();
+  FormatSettings.ShortDateFormat := 'dd.mm.yy';
+  FormatSettings.DateSeparator := '.';
+  Skill := GetMemory(SizeOf(TSkill));
+  Item := ListViewSkills.Items.Add();
 
-    Skill.Description := InputBox('Добавление записи:', 'Ваш навык или достижение:', '');
-    if not TestInput(Skill.Description) then
-    begin
-      FreeMemory(Skill);
-      Item.Free;
-      Exit;
-    end;
-    Item.Caption := Skill.Description;
-
-    Item.Data := Skill;
-  finally
-    BtnAddEdu.Enabled := True;
+  Skill.Description := ShortString(InputBox('Добавление записи:',
+    'Ваш навык или достижение:', ''));
+  if not TestInput(String(Skill.Description)) then
+  begin
+    FreeMemory(Skill);
+    Item.Free;
+    Exit;
   end;
+  Item.Caption := String(Skill.Description);
+
+  Item.Data := Skill;
 end;
 
 procedure TAppendForm.BtnRmEduClick(Sender: TObject);
 // Удалить запись об образовании
 begin
-  if Assigned(ListViewExp.Selected) then
+  if Assigned(ListViewEdu.Selected) then
     ListViewEdu.Selected.Free;
 end;
 
@@ -273,21 +265,50 @@ begin
     ListViewExp.Selected.Free;
 end;
 
+procedure TAppendForm.BtnRmSkillsClick(Sender: TObject);
+// Удалить запись о навыках
+begin
+  if Assigned(ListViewSkills.Selected) then
+    ListViewSkills.Selected.Free;
+end;
+
 procedure TAppendForm.BtnSaveClick(Sender: TObject);
 var
+  PID: Integer;
   Person: TPerson;
+  I: Integer;
 begin
+  FormatSettings.ShortDateFormat := 'dd.mm.yy';
+  FormatSettings.DateSeparator := '.';
+  if (EditFamily.Text = '') or (EditName.Text = '') or (EditPatronymic.Text = '')
+  then
+  begin
+    MessageBox(GetActiveWindow(), 'Следует ввести Ф.И.О для продолжения...',
+      'Внимание', MB_ICONWARNING);
+    Exit;
+  end;
+
   // Сохраним инфу о персоне
-  Person.Family := EditFamily.Text;
-  Person.Name := EditName.Text;
-  Person.Patronymic := EditPatronymic.Text;
-  Person.Phone := EditPhone.Text;
-  Person.EMail := EditMail.Text;
-  DataBase.NewPerson(Person);
-  ShowMessage('Сохранено');
+  Person.Family := ShortString(EditFamily.Text);
+  Person.Name := ShortString(EditName.Text);
+  Person.Patronymic := ShortString(EditPatronymic.Text);
+  Person.Phone := ShortString(EditPhone.Text);
+  Person.EMail := ShortString(EditMail.Text);
+  PID := DataBase.NewPerson(Person);
 
   // Стаж работы
+  for I := 0 to ListViewExp.Items.Count - 1 do
+    DataBase.NewWork(PID, PWork(ListViewExp.Items[I].Data)^);
 
+  // Образование
+  for I := 0 to ListViewEdu.Items.Count - 1 do
+    DataBase.NewEducation(PID, PEducation(ListViewEdu.Items[I].Data)^);
+
+  // Достижения
+  for I := 0 to ListViewEdu.Items.Count - 1 do
+    DataBase.NewSkill(PID, PSkill(ListViewSkills.Items[I].Data)^);
+
+  ShowMessage('Сохранено');
   Close;
 end;
 

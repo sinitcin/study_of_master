@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = #1056#1077#1079#1102#1084#1077' '#1082#1086#1085#1090#1088#1086#1083#1083#1077#1088
+  Caption = #1052#1077#1085#1077#1076#1078#1077#1088' '#1088#1077#1079#1102#1084#1077
   ClientHeight = 449
   ClientWidth = 863
   Color = clBtnFace

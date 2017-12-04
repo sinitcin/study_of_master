@@ -5,6 +5,8 @@ object AppendForm: TAppendForm
   ClientHeight = 299
   ClientWidth = 584
   Color = clBtnFace
+  Constraints.MaxWidth = 600
+  Constraints.MinWidth = 600
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -25,9 +27,9 @@ object AppendForm: TAppendForm
     TabOrder = 0
     object Label2: TLabel
       AlignWithMargins = True
-      Left = 14
+      Left = 340
       Top = 14
-      Width = 535
+      Width = 209
       Height = 18
       Margins.Left = 14
       Margins.Top = 14
@@ -44,9 +46,6 @@ object AppendForm: TAppendForm
       ParentBiDiMode = False
       ParentFont = False
       StyleElements = [seClient, seBorder]
-      ExplicitLeft = 340
-      ExplicitTop = -63
-      ExplicitWidth = 209
     end
     object Bevel1: TBevel
       AlignWithMargins = True
@@ -83,6 +82,13 @@ object AppendForm: TAppendForm
       Width = 115
       Height = 13
       Caption = #1053#1072#1074#1099#1082#1080' \ '#1076#1086#1089#1090#1080#1078#1077#1085#1080#1103':'
+    end
+    object Bevel2: TBevel
+      Left = 16
+      Top = 728
+      Width = 533
+      Height = 15
+      Shape = bsBottomLine
     end
     object EditFamily: TLabeledEdit
       Left = 16
@@ -233,8 +239,13 @@ object AppendForm: TAppendForm
       Top = 536
       Width = 502
       Height = 93
-      Columns = <>
+      Columns = <
+        item
+          Caption = #1054#1087#1080#1089#1072#1085#1080#1077
+          Width = 480
+        end>
       TabOrder = 11
+      ViewStyle = vsReport
     end
     object BtnRmSkills: TButton
       Left = 97
@@ -243,6 +254,7 @@ object AppendForm: TAppendForm
       Height = 25
       Caption = #1059#1076#1072#1083#1080#1090#1100
       TabOrder = 12
+      OnClick = BtnRmSkillsClick
     end
     object BtnAddSkills: TButton
       Left = 16

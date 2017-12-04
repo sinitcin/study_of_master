@@ -315,11 +315,12 @@ begin
     WriteLn(myFile, '</div></div>');
   end;
 
-  WriteLn(myFile, '</body>');
+  WriteLn(myFile, '<br><br><br></body>');
   CloseFile(myFile);
 
   // Отображение
   FormPreview.WebBrowser.Navigate(path);
+  FormPreview.Width := 800;
   FormPreview.ShowModal;
 end;
 
@@ -368,9 +369,9 @@ begin
   for I := 0 to DataBase.PersonCount - 1 do
   begin
     Item := ListView.Items.Add;
-    Item.Caption := DataBase.Persons[I].Family;
-    Item.SubItems.Add(DataBase.Persons[I].Name);
-    Item.SubItems.Add(DataBase.Persons[I].Patronymic);
+    Item.Caption := String(DataBase.Persons[I].Family);
+    Item.SubItems.Add(String(DataBase.Persons[I].Name));
+    Item.SubItems.Add(String(DataBase.Persons[I].Patronymic));
     Item.SubItems.Add(QualifToStr(DataBase.PersonQuality[DataBase.Persons[I].ID]));
     DateInterval := DataBase.PersonExperience[DataBase.Persons[I].ID];
     DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);

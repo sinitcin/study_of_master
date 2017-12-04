@@ -3,8 +3,10 @@ unit Main;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, uListAll, uAbout;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, uListAll,
+  uAbout;
 
 type
   TMainForm = class(TForm)
@@ -14,7 +16,8 @@ type
     Label6: TLabel;
     LabelAbout: TLabel;
     ScrollBox: TScrollBox;
-    procedure OnMenuMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure OnMenuMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
     procedure OnMenuMouseLeave(Sender: TObject);
     procedure LabelAllClick(Sender: TObject);
     procedure LabelGoodClick(Sender: TObject);
@@ -76,7 +79,8 @@ begin
     TLabel(Sender).Font.Style := [fsBold];
 end;
 
-procedure TMainForm.OnMenuMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TMainForm.OnMenuMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
 // Движение мыши над меню из лайблов слева
 begin
   if Sender is TLabel then
@@ -90,6 +94,10 @@ begin
   LabelAbout.Font.Color := clHighlight;
   AboutFrame := TAboutFrame.Create(nil);
   AboutFrame.Parent := ScrollBox;
+  AboutFrame.Image.Visible := True;
+  AboutFrame.Memo.Visible := False;
+  AboutFrame.Image.Left := 0;
+  AboutFrame.Timer.Enabled := True;
   AboutFrame.Show;
 end;
 

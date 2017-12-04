@@ -16,6 +16,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'Резюме-менеджер';
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Tablet Light');
   if MessageBox(HWND_DESKTOP, 'Внести новое резюме?', 'Вопрос', MB_ICONQUESTION or MB_YESNO) = IDNO
