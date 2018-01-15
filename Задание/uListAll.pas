@@ -3,10 +3,12 @@ unit uListAll;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons,
   Data.DB, Data.DbxSqlite, Data.SqlExpr, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
-  Data.FMTBcd, Vcl.ExtCtrls, Vcl.DBCtrls, Datasnap.DBClient, SimpleDS, AnsiStrings,
+  Data.FMTBcd, Vcl.ExtCtrls, Vcl.DBCtrls, Datasnap.DBClient, SimpleDS,
+  AnsiStrings,
   Vcl.ToolWin, System.ImageList, Vcl.ImgList, DateUtils, uDataBase, uPreview,
   Vcl.Menus, Generics.Collections;
 
@@ -59,9 +61,12 @@ var
 begin
   for I := ListView.Items.Count - 1 downto 0 do
   begin
-    DateInterval := DataBase.PersonExperience[DataBase.Persons[Integer(ListView.Items[I].Data)].ID];
-    DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
-    DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
+    DateInterval := DataBase.PersonExperience
+      [DataBase.Persons[Integer(ListView.Items[I].Data)].ID];
+    DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond,
+      AMilliSecond);
+    DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute,
+      ASecond, AMilliSecond);
     case Symbol of
       '>':
         if (CurrYear - AYear) < YearOfExperience then
@@ -76,7 +81,8 @@ begin
   end;
 end;
 
-procedure TListAllFrame.ReFilterByQualif(Qualification: TQualification; Symbol: Char);
+procedure TListAllFrame.ReFilterByQualif(Qualification: TQualification;
+  Symbol: Char);
 // Фильтрация по квалификации
 var
   I: Integer;
@@ -84,13 +90,16 @@ begin
   for I := ListView.Items.Count - 1 downto 0 do
     case Symbol of
       '>':
-        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) < Qualification then
+        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) < Qualification
+        then
           ListView.Items[I].Free;
       '=':
-        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) <> Qualification then
+        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) <> Qualification
+        then
           ListView.Items[I].Free;
       '<':
-        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) > Qualification then
+        if StrToQualif(ListView.Items[I].SubItems[COL_QUALIF - 1]) > Qualification
+        then
           ListView.Items[I].Free;
     end;
 end;
@@ -138,8 +147,8 @@ var
       if TokenList.Count = 0 then
         Exit(False);
       Token := TokenList.Dequeue();
-      if IndexText(AnsiString(Token), ['Нет данных', 'Прошёл курс', 'Техник', 'Бакалавр',
-        'Специалист', 'Магистр', 'Иное']) = INVALID_VALUE then
+      if IndexText(AnsiString(Token), ['Нет данных', 'Прошёл курс', 'Техник',
+        'Бакалавр', 'Специалист', 'Магистр', 'Иное']) = INVALID_VALUE then
         Exit(False);
 
       ReFilterByQualif(StrToQualif(Token), Symbol);
@@ -249,34 +258,43 @@ begin
 
   WriteLn(myFile, '<html><head>');
 
-  WriteLn(myFile, '<meta http-equiv="content-type "content="text/html; charset=utf-8"/>');
+  WriteLn(myFile,
+    '<meta http-equiv="content-type "content="text/html; charset=utf-8"/>');
 
-  WriteLn(myFile, '<style type="text/css" media="screen">@import url(screen.css);</style>');
+  WriteLn(myFile,
+    '<style type="text/css" media="screen">@import url(screen.css);</style>');
 
-  WriteLn(myFile, '<link rel="stylesheet" type="text/css" media="print" href="print.css" />');
+  WriteLn(myFile,
+    '<link rel="stylesheet" type="text/css" media="print" href="print.css" />');
 
-  WriteLn(myFile, '<script type="text/javascript" src="main.js" charset="UTF-8"></script>');
+  WriteLn(myFile,
+    '<script type="text/javascript" src="main.js" charset="UTF-8"></script>');
 
   WriteLn(myFile, '</head>');
 
-  WriteLn(myFile, Format('<body><h1>%s %s</h1>', [DataBase.Persons[PersonIndex].Name,
-    DataBase.Persons[PersonIndex].Family]));
+  WriteLn(myFile, Format('<body><h1>%s %s</h1>',
+    [DataBase.Persons[PersonIndex].Name, DataBase.Persons[PersonIndex]
+    .Family]));
 
-  WriteLn(myFile, Format('<p id="bio_left">%s<br/><a href="mailto:%s">%s</a></p>',
+  WriteLn(myFile,
+    Format('<p id="bio_left">%s<br/><a href="mailto:%s">%s</a></p>',
     [DataBase.Persons[PersonIndex].Phone, DataBase.Persons[PersonIndex].EMail,
     DataBase.Persons[PersonIndex].EMail]));
 
   WriteLn(myFile, '<h2>ЦЕЛЬ</h2>');
 
   // Доделать
-  WriteLn(myFile, '<p class="data">Найти высокооплачиваемую работу в крупной компании.</p>');
+  WriteLn(myFile,
+    '<p class="data">Найти высокооплачиваемую работу в крупной компании.</p>');
 
   WriteLn(myFile, '<h2>ОПЫТ РАБОТЫ</h2>');
-  for I := 0 to DataBase.GetPersonWorksCount(DataBase.Persons[PersonIndex].ID) - 1 do
+  for I := 0 to DataBase.GetPersonWorksCount(DataBase.Persons[PersonIndex]
+    .ID) - 1 do
   begin
     WriteLn(myFile, Format('<div class="job"><p class="date">%s<BR>%s</p>',
       [DateToStr(DataBase.Works[DataBase.Persons[PersonIndex].ID, I].EnterDate),
-      DateToStr(DataBase.Works[DataBase.Persons[PersonIndex].ID, I].LeaveDate)]));
+      DateToStr(DataBase.Works[DataBase.Persons[PersonIndex].ID,
+      I].LeaveDate)]));
 
     WriteLn(myFile, '<div class="job_data">');
 
@@ -292,17 +310,20 @@ begin
   end;
 
   WriteLn(myFile, '<h2>НАВЫКИ, ТЕХНОЛОГИИ И ПРОЕКТЫ</h2><ul>');
-  for I := 0 to DataBase.GetPersonSkillsCount(DataBase.Persons[PersonIndex].ID) - 1 do
-    WriteLn(myFile, Format('<li>%s</li>', [DataBase.Skills[DataBase.Persons[PersonIndex].ID,
-      I].Description]));
+  for I := 0 to DataBase.GetPersonSkillsCount(DataBase.Persons[PersonIndex]
+    .ID) - 1 do
+    WriteLn(myFile, Format('<li>%s</li>',
+      [DataBase.Skills[DataBase.Persons[PersonIndex].ID, I].Description]));
   WriteLn(myFile, '</ul>');
 
   WriteLn(myFile, '<h2>ОБРАЗОВАНИЕ</h2>');
-  for I := 0 to DataBase.GetPersonEduCount(DataBase.Persons[PersonIndex].ID) - 1 do
+  for I := 0 to DataBase.GetPersonEduCount(DataBase.Persons[PersonIndex]
+    .ID) - 1 do
   begin
     WriteLn(myFile, Format('<div class="job"><p class="date">%s<BR>%s</p>',
-      [DateToStr(DataBase.Educations[DataBase.Persons[PersonIndex].ID, I].EnterDate),
-      DateToStr(DataBase.Educations[DataBase.Persons[PersonIndex].ID, I].LeaveDate)]));
+      [DateToStr(DataBase.Educations[DataBase.Persons[PersonIndex].ID,
+      I].EnterDate), DateToStr(DataBase.Educations[DataBase.Persons[PersonIndex]
+      .ID, I].LeaveDate)]));
 
     WriteLn(myFile, '<div class="job_data">');
 
@@ -310,7 +331,8 @@ begin
       [DataBase.Educations[DataBase.Persons[PersonIndex].ID, I].Name]));
 
     WriteLn(myFile, Format('<p class="position">%s</p>',
-      [QualifToStr(DataBase.Educations[DataBase.Persons[PersonIndex].ID, I].Qualification)]));
+      [QualifToStr(DataBase.Educations[DataBase.Persons[PersonIndex].ID,
+      I].Qualification)]));
 
     WriteLn(myFile, '</div></div>');
   end;
@@ -372,11 +394,21 @@ begin
     Item.Caption := String(DataBase.Persons[I].Family);
     Item.SubItems.Add(String(DataBase.Persons[I].Name));
     Item.SubItems.Add(String(DataBase.Persons[I].Patronymic));
-    Item.SubItems.Add(QualifToStr(DataBase.PersonQuality[DataBase.Persons[I].ID]));
+    Item.SubItems.Add(QualifToStr(DataBase.PersonQuality
+      [DataBase.Persons[I].ID]));
     DateInterval := DataBase.PersonExperience[DataBase.Persons[I].ID];
-    DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
-    DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute, ASecond, AMilliSecond);
-    Buffer := Trim(YearToStr(CurrYear - AYear) + ' ' + MounthToStr(CurrMonth - AMonth));
+    DecodeDateTime(Now, CurrYear, CurrMonth, ADay, AHour, AMinute, ASecond,
+      AMilliSecond);
+    DecodeDateTime(Now - DateInterval, AYear, AMonth, ADay, AHour, AMinute,
+      ASecond, AMilliSecond);
+    if CurrMonth < AMonth then
+    begin
+      Buffer := Trim(YearToStr(CurrYear - AYear - 1) + ' ' +
+        MounthToStr(CurrMonth + 12 - AMonth));
+    end
+    else
+      Buffer := Trim(YearToStr(CurrYear - AYear) + ' ' +
+        MounthToStr(CurrMonth - AMonth));
     if Buffer <> '' then
       Item.SubItems.Add(Buffer)
     else
@@ -397,9 +429,11 @@ procedure TListAllFrame.ResizeColumns;
 begin
   ListView.Column[COL_FAMILY].Width := GetWidthByPercent(ListView.Width, 15);
   ListView.Column[COL_NAME].Width := GetWidthByPercent(ListView.Width, 15);
-  ListView.Column[COL_PATRONYMIC].Width := GetWidthByPercent(ListView.Width, 15);
+  ListView.Column[COL_PATRONYMIC].Width :=
+    GetWidthByPercent(ListView.Width, 15);
   ListView.Column[COL_QUALIF].Width := GetWidthByPercent(ListView.Width, 20);
-  ListView.Column[COL_EXPERIENCE].Width := GetWidthByPercent(ListView.Width, 25);
+  ListView.Column[COL_EXPERIENCE].Width :=
+    GetWidthByPercent(ListView.Width, 25);
 end;
 
 end.

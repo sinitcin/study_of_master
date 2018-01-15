@@ -27,9 +27,9 @@ object AppendForm: TAppendForm
     TabOrder = 0
     object Label2: TLabel
       AlignWithMargins = True
-      Left = 340
+      Left = 14
       Top = 14
-      Width = 209
+      Width = 535
       Height = 18
       Margins.Left = 14
       Margins.Top = 14
@@ -46,6 +46,8 @@ object AppendForm: TAppendForm
       ParentBiDiMode = False
       ParentFont = False
       StyleElements = [seClient, seBorder]
+      ExplicitLeft = 340
+      ExplicitWidth = 209
     end
     object Bevel1: TBevel
       AlignWithMargins = True
